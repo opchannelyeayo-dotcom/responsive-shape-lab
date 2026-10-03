@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="300×300 方格的響應式實驗：透過 600px、900px 兩個 CSS 斷點，改變形狀與顏色。">
+  <title>形狀實驗室｜300×300 響應式方格</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='4' y='4' width='24' height='24' rx='7' fill='%231b5745'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #24372f;
+      --muted: #6c776f;
+      --line: #d9ded5;
+      --paper: #f6f7ef;
+      --shape-color: #e76c50;
+      --shape-radius: 0;
+      --shape-name: "方形";
+      --shape-hex: "#E76C50";
+      --range: "小於 600px";
+      font-family: "Microsoft JhengHei", "PingFang TC", system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: var(--paper); }
+    .page { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
+    .mono { font-family: "Cascadia Code", Consolas, monospace; }
+    header { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 28px 0; border-bottom: 1px solid var(--line); }
+    .brand { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 700; letter-spacing: 1.5px; }
+    .brand-mark { width: 17px; height: 17px; border: 2px solid var(--ink); border-radius: 5px; }
+    .edition { color: var(--muted); font-size: 11px; letter-spacing: 1px; }
+    main { padding: 35px 0 24px; }
+    .eyebrow { margin: 0 0 13px; color: var(--muted); font-size: 11px; letter-spacing: 1.8px; }
+    h1 { margin: 0; font-size: clamp(28px, 3.5vw, 42px); font-weight: 700; letter-spacing: -1.4px; line-height: 1.4; }
+    .intro { margin: 12px 0 28px; color: var(--muted); font-size: 13px; line-height: 1.9; }
+    .experiment { display: grid; gap: 24px; }
+    .canvas { border: 1px solid var(--line); border-radius: 16px; background: #fffef9; overflow: hidden; }
+    .canvas-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 15px 17px; border-bottom: 1px solid var(--line); font-size: 11px; }
+    .live-label { display: flex; align-items: center; gap: 7px; color: var(--muted); }
+    .live-dot { width: 6px; height: 6px; background: var(--shape-color); border-radius: 50%; }
+    #viewport-width { font-size: 12px; font-weight: 700; }
+    .specimen { min-height: 390px; display: grid; place-items: center; padding: 45px 0 24px; background-image: radial-gradient(#d5dbd1 0.8px, transparent 0.8px); background-size: 20px 20px; }
+    .shape-wrap { position: relative; width: 300px; height: 300px; }
+    .dimension { position: absolute; top: -30px; left: 0; width: 300px; height: 9px; border: solid #a5b1a7; border-width: 0 1px 1px; text-align: center; }
+    .dimension span { position: relative; top: -2px; background: #fffef9; padding: 0 10px; color: var(--muted); font-size: 10px; }
+    .shape { width: 300px; height: 300px; background-color: var(--shape-color); border-radius: var(--shape-radius); }
+    .canvas-caption { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 17px; border-top: 1px solid var(--line); font-size: 12px; }
+    .shape-name::after { content: var(--shape-name); font-weight: 700; }
+    .shape-hex::after { content: var(--shape-hex); color: var(--muted); font-size: 11px; }
+    .details { padding: 2px 0; }
+    .details-title { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+    h2 { margin: 0; font-size: 15px; font-weight: 700; }
+    .count { color: var(--muted); font-size: 11px; }
+    .states { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+    .state { display: flex; align-items: center; gap: 14px; padding: 15px; border: 1px solid var(--line); border-radius: 12px; background: #fffef980; }
+    .swatch { flex: 0 0 34px; width: 34px; height: 34px; }
+    .small .swatch { background: #e76c50; }
+    .medium .swatch { background: #9076d4; border-radius: 8px; }
+    .large .swatch { background: #398565; border-radius: 50%; }
+    .state-text { flex: 1; }
+    .state-title { margin: 0 0 4px; font-size: 13px; font-weight: 700; }
+    .state-range { margin: 0; color: var(--muted); font-size: 11px; }
+    .indicator { display: none; padding: 4px 7px; border-radius: 5px; color: var(--ink); background: #ffffffb3; font-size: 10px; white-space: nowrap; }
+    .small { border-color: #e76c5080; background: #e76c5010; }
+    .small .indicator { display: block; }
+    .rule { margin: 20px 0 0; padding: 16px 0 0; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; line-height: 1.9; }
+    .rule strong { color: var(--ink); font-weight: 600; }
+    .range::after { content: var(--range); }
+    .size-note { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 18px; color: var(--muted); font-size: 10px; letter-spacing: 0.3px; }
+    footer { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 19px 0 25px; border-top: 1px solid var(--line); color: var(--muted); font-size: 10px; }
+    footer a { color: var(--ink); text-decoration: none; border-bottom: 1px solid #a5b1a7; padding-bottom: 2px; }
+    footer a:hover { color: #398565; }
+    footer a:focus-visible { outline: 2px solid var(--ink); outline-offset: 5px; }
+    @media (min-width: 600px) {
+      :root { --shape-color: #9076d4; --shape-radius: 64px; --shape-name: "圓角方形"; --shape-hex: "#9076D4"; --range: "600px 至 899px"; }
+      header { padding: 32px 0; }
+      main { padding-top: 46px; }
+      .intro { font-size: 14px; margin-bottom: 32px; }
+      .specimen { min-height: 430px; }
+      .canvas-bar, .canvas-caption { padding-left: 24px; padding-right: 24px; }
+      .small { border-color: var(--line); background: #fffef980; }
+      .small .indicator { display: none; }
+      .medium { border-color: #9076d480; background: #9076d410; }
+      .medium .indicator { display: block; }
+      .states { grid-template-columns: repeat(3, 1fr); }
+      .state { flex-wrap: wrap; gap: 10px; }
+      .state-text { flex-basis: calc(100% - 44px); }
+      .indicator { margin-left: 44px; }
+      .rule { margin-top: 18px; }
+    }
+    @media (min-width: 900px) {
+      :root { --shape-color: #398565; --shape-radius: 50%; --shape-name: "圓形"; --shape-hex: "#398565"; --range: "900px 以上"; }
+      main { padding-top: 56px; padding-bottom: 36px; }
+      .intro { margin-bottom: 40px; }
+      .experiment { grid-template-columns: minmax(0, 1.65fr) minmax(300px, 1fr); gap: 40px; }
+      .specimen { min-height: 442px; }
+      .details { padding-top: 6px; }
+      .details-title { margin-bottom: 22px; }
+      .states { grid-template-columns: 1fr; gap: 12px; }
+      .state { flex-wrap: nowrap; padding: 19px 16px; gap: 14px; }
+      .state-text { flex-basis: auto; }
+      .indicator { margin-left: 0; }
+      .medium { border-color: var(--line); background: #fffef980; }
+      .medium .indicator { display: none; }
+      .large { border-color: #39856580; background: #39856510; }
+      .large .indicator { display: block; }
+      .rule { margin-top: 26px; padding-top: 22px; }
+      .size-note { margin-top: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="brand mono"><span class="brand-mark" aria-hidden="true"></span>SHAPE / LAB</div>
+      <span class="edition mono">EXPERIMENT 001</span>
+    </header>
+    <main>
+      <p class="eyebrow mono">RESPONSIVE SHAPES</p>
+      <h1>一個方格，三種樣子。</h1>
+      <p class="intro">縮放瀏覽器視窗，看看 300 × 300 的方格如何改變。</p>
+      <div class="experiment">
+        <section class="canvas" aria-label="300×300 響應式形狀展示">
+          <div class="canvas-bar">
+            <span class="live-label"><span class="live-dot" aria-hidden="true"></span>目前視窗寬度</span>
+            <output id="viewport-width" class="mono" aria-live="polite">— px</output>
+          </div>
+          <div class="specimen">
+            <div class="shape-wrap">
+              <div class="dimension" aria-hidden="true"><span class="mono">300 px</span></div>
+              <div class="shape" role="img" aria-label="300×300 方形，珊瑚色"></div>
+            </div>
+          </div>
+          <div class="canvas-caption"><span class="shape-name"></span><span class="shape-hex mono"></span></div>
+        </section>
+        <aside class="details" aria-labelledby="states-title">
+          <div class="details-title"><h2 id="states-title">斷點與形狀</h2><span class="count mono">02 BREAKPOINTS</span></div>
+          <ol class="states">
+            <li class="state small"><span class="swatch" aria-hidden="true"></span><div class="state-text"><p class="state-title">01　方形</p><p class="state-range mono">width &lt; 600px</p></div><span class="indicator">目前</span></li>
+            <li class="state medium"><span class="swatch" aria-hidden="true"></span><div class="state-text"><p class="state-title">02　圓角方形</p><p class="state-range mono">600px ≤ width &lt; 900px</p></div><span class="indicator">目前</span></li>
+            <li class="state large"><span class="swatch" aria-hidden="true"></span><div class="state-text"><p class="state-title">03　圓形</p><p class="state-range mono">width ≥ 900px</p></div><span class="indicator">目前</span></li>
+          </ol>
+          <p class="rule">目前套用 <strong class="range"></strong> 的樣式。<br>形狀與顏色改變，寬高始終維持 <strong>300 × 300px</strong>。</p>
+          <div class="size-note mono"><span>600px / 900px</span><span>CSS MEDIA QUERIES</span></div>
+        </aside>
+      </div>
+    </main>
+    <footer><span>形狀實驗室 · 響應式網頁練習</span><a href="https://github.com/opchannelyeayo-dotcom/responsive-shape-lab" target="_blank" rel="noopener noreferrer">GitHub 原始碼 ↗</a></footer>
+  </div>
+  <script>
+    const widthOutput = document.getElementById('viewport-width');
+    const shape = document.querySelector('.shape');
+    function updateViewport() {
+      widthOutput.textContent = `${window.innerWidth} px`;
+      const style = getComputedStyle(shape);
+      const name = style.getPropertyValue('--shape-name').replaceAll('"', '').trim();
+      const color = style.getPropertyValue('--shape-hex').replaceAll('"', '').trim();
+      shape.setAttribute('aria-label', `300×300 ${name}，${color}`);
+    }
+    window.addEventListener('resize', updateViewport);
+    updateViewport();
+  </script>
+</body>
+</html>
