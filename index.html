@@ -29,8 +29,6 @@
     .brand-mark { width: 17px; height: 17px; border: 2px solid var(--ink); border-radius: 5px; }
     .edition { color: var(--muted); font-size: 11px; letter-spacing: 1px; }
     main { padding: 35px 0 24px; }
-    .eyebrow { margin: 0 0 13px; color: var(--muted); font-size: 11px; letter-spacing: 1.8px; }
-    h1 { margin: 0; font-size: clamp(28px, 3.5vw, 42px); font-weight: 700; letter-spacing: -1.4px; line-height: 1.4; }
     .intro { margin: 12px 0 28px; color: var(--muted); font-size: 13px; line-height: 1.9; }
     .experiment { display: grid; gap: 24px; }
     .canvas { border: 1px solid var(--line); border-radius: 16px; background: #fffef9; overflow: hidden; }
@@ -66,7 +64,7 @@
     .rule strong { color: var(--ink); font-weight: 600; }
     .range::after { content: var(--range); }
     .size-note { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 18px; color: var(--muted); font-size: 10px; letter-spacing: 0.3px; }
-    footer { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 19px 0 25px; border-top: 1px solid var(--line); color: var(--muted); font-size: 10px; }
+    footer { display: flex; justify-content: flex-end; padding: 19px 0 25px; border-top: 1px solid var(--line); font-size: 10px; }
     footer a { color: var(--ink); text-decoration: none; border-bottom: 1px solid #a5b1a7; padding-bottom: 2px; }
     footer a:hover { color: #398565; }
     footer a:focus-visible { outline: 2px solid var(--ink); outline-offset: 5px; }
@@ -115,8 +113,6 @@
       <span class="edition mono">EXPERIMENT 001</span>
     </header>
     <main>
-      <p class="eyebrow mono">RESPONSIVE SHAPES</p>
-      <h1>一個方格，三種樣子。</h1>
       <p class="intro">縮放瀏覽器視窗，看看 300 × 300 的方格如何改變。</p>
       <div class="experiment">
         <section class="canvas" aria-label="300×300 響應式形狀展示">
@@ -144,7 +140,7 @@
         </aside>
       </div>
     </main>
-    <footer><span>形狀實驗室 · 響應式網頁練習</span><a href="https://github.com/opchannelyeayo-dotcom/responsive-shape-lab" target="_blank" rel="noopener noreferrer">GitHub 原始碼 ↗</a></footer>
+    <footer><a href="https://github.com/opchannelyeayo-dotcom/responsive-shape-lab" target="_blank" rel="noopener noreferrer">GitHub 原始碼 ↗</a></footer>
   </div>
   <script>
     const widthOutput = document.getElementById('viewport-width');
